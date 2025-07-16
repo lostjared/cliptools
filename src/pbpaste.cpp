@@ -1,6 +1,8 @@
-#include <windows.h>
-#include <string>
-#include <iostream>
+#include<windows.h>
+#include<string>
+#include<iostream>
+#include<io.h>      
+#include<fcntl.h>   
 
 std::wstring GetClipboardText() {
     if (!OpenClipboard(nullptr))
@@ -35,6 +37,8 @@ std::wstring GetClipboardText() {
 }
 
 int main(int argc, char **argv) {
+    _setmode(_fileno(stdout), _O_U16TEXT);
+    std::locale::global(std::locale(""));
     std::wstring text = GetClipboardText();
     std::wcout << text;
     return 0;
