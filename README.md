@@ -1,5 +1,5 @@
 # cliptools
-Commands similar to pbcopy and pbpaste from macOS.
+Commands similar to pbcopy and pbpaste from macOS for Windows
 
 <img width="1115" height="674" alt="image" src="https://github.com/user-attachments/assets/346d1246-f1c7-4f2b-be08-11c971593bf5" />
 
