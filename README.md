@@ -8,4 +8,4 @@ Commands similar to pbcopy and pbpaste from macOS for Windows
   if you want to use with WSL2 First copy the .exe files
   to /usr/local/bin, then copy the dll libgcc_s-seh-1.dll libstdc++6.dll libwinpthread-1.dll to /usr/local/bin
 
-You can also use Powershell Get-CLipboard  or clip.exe
+You can also use PowerShell Get-Clipboard  or clip.exe
