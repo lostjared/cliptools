@@ -1,45 +1,26 @@
-#include<windows.h>
-#include<string>
-#include<iostream>
-#include<io.h>      
-#include<fcntl.h>   
+#include <windows.h>
+#include <iostream>
+#include <string>
 
-std::wstring GetClipboardText() {
-    if (!OpenClipboard(nullptr))
-        return L"";
-
-    std::wstring result;
-
-    if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
-        HGLOBAL h = GetClipboardData(CF_UNICODETEXT);
-        if (h) {
-            auto p = static_cast<const wchar_t*>(GlobalLock(h));
-            if (p)
-                result = p;
-            GlobalUnlock(h);
-        }
-    }
-    else if (IsClipboardFormatAvailable(CF_TEXT)) {
-        HGLOBAL h = GetClipboardData(CF_TEXT);
-        if (h) {
-            auto p = static_cast<const char*>(GlobalLock(h));
-            if (p) {
-                int len = MultiByteToWideChar(CP_ACP, 0, p, -1, nullptr, 0);
-                std::wstring tmp(len, L'\0');
-                MultiByteToWideChar(CP_ACP, 0, p, -1, &tmp[0], len);
-                result = tmp;
-            }
-            GlobalUnlock(h);
-        }
-    }
-    CloseClipboard();
-    return result;
+static std::string toUtf8(const std::wstring &w)
+{
+    if (w.empty()) return {};
+    int n = WideCharToMultiByte(CP_UTF8, 0, w.data(), (int)w.size(), nullptr, 0, nullptr, nullptr);
+    std::string s(n, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, w.data(), (int)w.size(), &s[0], n, nullptr, nullptr);
+    return s;
 }
 
-int main(int argc, char **argv) {
-    _setmode(_fileno(stdout), _O_U16TEXT);
-    std::locale::global(std::locale(""));
-    std::wstring text = GetClipboardText();
-    std::wcout << text;
+int main()
+{
+    if (!OpenClipboard(nullptr)) return 1;
+    HANDLE hd = GetClipboardData(CF_UNICODETEXT);
+    if (!hd) { CloseClipboard(); return 1; }
+    wchar_t *w = static_cast<wchar_t*>(GlobalLock(hd));
+    if (!w) { CloseClipboard(); return 1; }
+    std::wstring text(w);
+    GlobalUnlock(hd);
+    CloseClipboard();
+    std::cout << toUtf8(text);
     return 0;
 }
